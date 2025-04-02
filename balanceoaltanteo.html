@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Práctica de Balanceo por Tanteo</title>
+    <style>
+      /* Estilos Generales */
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+          "Segoe UI Symbol";
+        line-height: 1.6;
+        margin: 0;
+        padding: 20px;
+        background-color: #f0f4f8; /* Light blue-grey background */
+        color: #333;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start; /* Align to top */
+        min-height: 100vh;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 750px;
+        background-color: #fff;
+        padding: 25px 35px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+      }
+
+      h1 {
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 10px;
+      }
+
+      /* Área de la Ecuación */
+      #equation-container {
+        margin-bottom: 25px;
+        padding: 15px;
+        background-color: #eaf2f8;
+        border-radius: 5px;
+        border-left: 4px solid #3498db;
+      }
+
+      #equation-display {
+        font-size: 1.3em;
+        font-weight: bold;
+        text-align: center;
+        color: #1a5276;
+        margin-bottom: 15px; /* Space below unbalanced eq */
+        font-family: "Courier New", Courier, monospace;
+      }
+      #equation-display .unbalanced-label {
+        font-size: 0.8em;
+        font-weight: normal;
+        color: #5dade2;
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      /* Área de Inputs */
+      #input-area {
+        display: flex;
+        align-items: center; /* Vertically align items */
+        justify-content: center; /* Center items horizontally */
+        flex-wrap: wrap; /* Allow wrapping if too long */
+        gap: 8px; /* Space between items */
+        margin-bottom: 25px;
+        min-height: 40px; /* Ensure space is reserved */
+      }
+
+      .input-group {
+        display: inline-flex; /* Keep input and formula together */
+        align-items: center;
+        margin: 5px 0;
+      }
+
+      .coefficient-input {
+        width: 50px; /* Fixed width for coefficients */
+        padding: 8px;
+        margin-right: 4px; /* Space between input and formula */
+        border: 1px solid #bdc3c7;
+        border-radius: 4px;
+        font-size: 1.1em;
+        text-align: center;
+        appearance: textfield; /* Standard property for compatibility */
+        -moz-appearance: textfield; /* Hide spinners in Firefox */
+      }
+      /* Hide spinners in Chrome, Safari, Edge */
+      .coefficient-input::-webkit-outer-spin-button,
+      .coefficient-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      .formula {
+        font-size: 1.2em;
+        font-weight: bold;
+        font-family: "Courier New", Courier, monospace;
+        color: #2c3e50;
+      }
+
+      .operator {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #34495e;
+        margin: 0 8px; /* Space around + and -> */
+      }
+
+      /* Botones */
+      .button-container {
+        text-align: center;
+        margin-top: 20px;
+        margin-bottom: 25px;
+      }
+
+      button {
+        background-color: #3498db;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background-color 0.3s ease, transform 0.1s ease;
+        margin: 0 10px;
+      }
+
+      button:hover {
+        background-color: #2980b9;
+      }
+      button:active {
+        transform: scale(0.98); /* Slight press effect */
+      }
+
+      button.secondary {
+        background-color: #7f8c8d;
+      }
+      button.secondary:hover {
+        background-color: #626f70;
+      }
+
+      /* Feedback */
+      #feedback {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 5px;
+        font-weight: 500;
+        min-height: 40px; /* Reserve space */
+        text-align: center;
+        line-height: 1.5;
+        display: none; /* Hidden initially */
+      }
+
+      #feedback.correcto {
+        color: #155724;
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        display: block; /* Show when correct */
+      }
+
+      #feedback.incorrecto {
+        color: #721c24;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        display: block; /* Show when incorrect */
+      }
+
+      #feedback .correct-equation {
+        display: block;
+        margin-top: 10px;
+        font-weight: bold;
+        font-family: "Courier New", Courier, monospace;
+        color: #5a1a22; /* Darker red for contrast */
+        font-size: 1.1em;
+      }
+      #feedback .correct-equation-label {
+        font-size: 0.9em;
+        font-weight: normal;
+        color: #721c24;
+        display: block;
+        margin-bottom: 3px;
+      }
+
+      /* Estilo para el botón de regreso */
+      .back-button-container {
+        text-align: center; /* Centra el botón */
+        margin-top: 30px; /* Espacio arriba del botón */
+        padding-top: 20px; /* Espacio extra */
+        border-top: 1px solid #e0e0e0; /* Línea separadora sutil */
+      }
+
+      .back-button {
+        display: inline-block;
+        background-color: #5dade2; /* Azul más claro */
+        color: white;
+        padding: 9px 18px;
+        border: none;
+        border-radius: 5px;
+        font-size: 0.95em;
+        font-weight: 500; /* Peso medio */
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.2s ease,
+          transform 0.1s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      .back-button:hover {
+        background-color: #2e86c1; /* Azul más oscuro al pasar */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+      .back-button:active {
+        transform: scale(0.98);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Práctica de Balanceo por Tanteo</h1>
+
+      <div id="equation-container">
+        <div id="equation-display">
+          <span class="unbalanced-label">Ecuación a Balancear:</span>
+          <!-- La ecuación no balanceada se insertará aquí -->
+        </div>
+        <div id="input-area">
+          <!-- Los inputs para coeficientes se insertarán aquí -->
+        </div>
+      </div>
+
+      <div class="button-container">
+        <button onclick="checkAnswer()">Comprobar Respuesta</button>
+        <button onclick="generateNewProblem()" class="secondary">
+          Nueva Ecuación
+        </button>
+      </div>
+
+      <div id="feedback">
+        <!-- El feedback (correcto/incorrecto) aparecerá aquí -->
+      </div>
+
+      <!-- =========== BOTÓN DE REGRESO A ESTEQUIOMETRÍA ========== -->
+      <div class="back-button-container">
+        <a href="./index.html" class="back-button">
+          ← Volver a Ejercicios de Estequiometría
+        </a>
+      </div>
+      <!-- ======================================================= -->
+    </div>
+    <!-- Fin del div.container -->
+
+    <script>
+      // =============================================
+      // DATOS DE ECUACIONES (NO BALANCEADAS)
+      // =============================================
+      const equationsData = [
+        // Simples
+        {
+          unbalanced: "H₂ + O₂ → H₂O",
+          reactants: [
+            { formula: "H₂", atoms: { H: 2 } },
+            { formula: "O₂", atoms: { O: 2 } },
+          ],
+          products: [{ formula: "H₂O", atoms: { H: 2, O: 1 } }],
+          correctCoeffs: [2, 1, 2], // Coeficientes correctos: 2 H2 + 1 O2 -> 2 H2O
+        },
+        {
+          unbalanced: "N₂ + H₂ → NH₃",
+          reactants: [
+            { formula: "N₂", atoms: { N: 2 } },
+            { formula: "H₂", atoms: { H: 2 } },
+          ],
+          products: [{ formula: "NH₃", atoms: { N: 1, H: 3 } }],
+          correctCoeffs: [1, 3, 2], // 1 N2 + 3 H2 -> 2 NH3
+        },
+        {
+          unbalanced: "Fe + O₂ → Fe₂O₃",
+          reactants: [
+            { formula: "Fe", atoms: { Fe: 1 } },
+            { formula: "O₂", atoms: { O: 2 } },
+          ],
+          products: [{ formula: "Fe₂O₃", atoms: { Fe: 2, O: 3 } }],
+          correctCoeffs: [4, 3, 2], // 4 Fe + 3 O2 -> 2 Fe2O3
+        },
+        {
+          unbalanced: "CH₄ + O₂ → CO₂ + H₂O",
+          reactants: [
+            { formula: "CH₄", atoms: { C: 1, H: 4 } },
+            { formula: "O₂", atoms: { O: 2 } },
+          ],
+          products: [
+            { formula: "CO₂", atoms: { C: 1, O: 2 } },
+            { formula: "H₂O", atoms: { H: 2, O: 1 } },
+          ],
+          correctCoeffs: [1, 2, 1, 2], // 1 CH4 + 2 O2 -> 1 CO2 + 2 H2O
+        },
+        {
+          unbalanced: "KClO₃ → KCl + O₂",
+          reactants: [{ formula: "KClO₃", atoms: { K: 1, Cl: 1, O: 3 } }],
+          products: [
+            { formula: "KCl", atoms: { K: 1, Cl: 1 } },
+            { formula: "O₂", atoms: { O: 2 } },
+          ],
+          correctCoeffs: [2, 2, 3], // 2 KClO3 -> 2 KCl + 3 O2
+        },
+        // Un poco más complejas
+        {
+          unbalanced: "Al + HCl → AlCl₃ + H₂",
+          reactants: [
+            { formula: "Al", atoms: { Al: 1 } },
+            { formula: "HCl", atoms: { H: 1, Cl: 1 } },
+          ],
+          products: [
+            { formula: "AlCl₃", atoms: { Al: 1, Cl: 3 } },
+            { formula: "H₂", atoms: { H: 2 } },
+          ],
+          correctCoeffs: [2, 6, 2, 3], // 2 Al + 6 HCl -> 2 AlCl3 + 3 H2
+        },
+        {
+          unbalanced: "C₃H₈ + O₂ → CO₂ + H₂O",
+          reactants: [
+            { formula: "C₃H₈", atoms: { C: 3, H: 8 } },
+            { formula: "O₂", atoms: { O: 2 } },
+          ],
+          products: [
+            { formula: "CO₂", atoms: { C: 1, O: 2 } },
+            { formula: "H₂O", atoms: { H: 2, O: 1 } },
+          ],
+          correctCoeffs: [1, 5, 3, 4], // 1 C3H8 + 5 O2 -> 3 CO2 + 4 H2O
+        },
+        {
+          unbalanced: "Fe₂O₃ + CO → Fe + CO₂",
+          reactants: [
+            { formula: "Fe₂O₃", atoms: { Fe: 2, O: 3 } },
+            { formula: "CO", atoms: { C: 1, O: 1 } },
+          ],
+          products: [
+            { formula: "Fe", atoms: { Fe: 1 } },
+            { formula: "CO₂", atoms: { C: 1, O: 2 } },
+          ],
+          correctCoeffs: [1, 3, 2, 3], // 1 Fe2O3 + 3 CO -> 2 Fe + 3 CO2
+        },
+        {
+          unbalanced: "NH₃ + O₂ → NO + H₂O",
+          reactants: [
+            { formula: "NH₃", atoms: { N: 1, H: 3 } },
+            { formula: "O₂", atoms: { O: 2 } },
+          ],
+          products: [
+            { formula: "NO", atoms: { N: 1, O: 1 } },
+            { formula: "H₂O", atoms: { H: 2, O: 1 } },
+          ],
+          correctCoeffs: [4, 5, 4, 6], // 4 NH3 + 5 O2 -> 4 NO + 6 H2O
+        },
+        {
+          // Con poliatómicos (a veces ayuda tratar el ion como unidad si no cambia)
+          unbalanced: "AgNO₃ + CaCl₂ → AgCl + Ca(NO₃)₂",
+          reactants: [
+            { formula: "AgNO₃", atoms: { Ag: 1, N: 1, O: 3 } },
+            { formula: "CaCl₂", atoms: { Ca: 1, Cl: 2 } },
+          ],
+          products: [
+            { formula: "AgCl", atoms: { Ag: 1, Cl: 1 } },
+            { formula: "Ca(NO₃)₂", atoms: { Ca: 1, N: 2, O: 6 } },
+          ],
+          correctCoeffs: [2, 1, 2, 1], // 2 AgNO3 + 1 CaCl2 -> 2 AgCl + 1 Ca(NO3)2
+        },
+      ];
+
+      let currentEquation = null;
+      let lastEquationIndex = -1;
+
+      // =============================================
+      // FUNCIONES PRINCIPALES
+      // =============================================
+
+      function getRandomEquation() {
+        let randomIndex;
+        // Evita repetir la misma ecuación seguida
+        do {
+          randomIndex = Math.floor(Math.random() * equationsData.length);
+        } while (equationsData.length > 1 && randomIndex === lastEquationIndex);
+        lastEquationIndex = randomIndex;
+        return equationsData[randomIndex];
+      }
+
+      function displayEquation(equationObj) {
+        currentEquation = equationObj; // Guarda la ecuación actual globalmente
+        const equationDisplay = document.getElementById("equation-display");
+        const inputArea = document.getElementById("input-area");
+        const feedback = document.getElementById("feedback");
+
+        // Muestra la ecuación no balanceada
+        equationDisplay.innerHTML = `<span class="unbalanced-label">Ecuación a Balancear:</span>${equationObj.unbalanced}`;
+
+        // Limpia inputs anteriores y feedback
+        inputArea.innerHTML = "";
+        feedback.style.display = "none";
+        feedback.className = "feedback"; // Resetea clases correcto/incorrecto
+
+        // Crea inputs para reactantes
+        equationObj.reactants.forEach((reactant, index) => {
+          const inputGroup = document.createElement("div");
+          inputGroup.className = "input-group";
+          const input = document.createElement("input");
+          input.type = "number";
+          input.className = "coefficient-input reactant-input";
+          input.min = "1"; // El coeficiente mínimo es 1
+          input.placeholder = "?"; // Indicador visual
+          input.setAttribute(
+            "aria-label",
+            `Coeficiente para ${reactant.formula}`
+          );
+          const formulaSpan = document.createElement("span");
+          formulaSpan.className = "formula";
+          formulaSpan.textContent = reactant.formula;
+
+          inputGroup.appendChild(input);
+          inputGroup.appendChild(formulaSpan);
+          inputArea.appendChild(inputGroup);
+
+          // Añade el '+' si no es el último reactante
+          if (index < equationObj.reactants.length - 1) {
+            const plus = document.createElement("span");
+            plus.className = "operator";
+            plus.textContent = "+";
+            inputArea.appendChild(plus);
+          }
+        });
+
+        // Añade la flecha '→'
+        const arrow = document.createElement("span");
+        arrow.className = "operator";
+        arrow.textContent = "→";
+        inputArea.appendChild(arrow);
+
+        // Crea inputs para productos
+        equationObj.products.forEach((product, index) => {
+          const inputGroup = document.createElement("div");
+          inputGroup.className = "input-group";
+          const input = document.createElement("input");
+          input.type = "number";
+          input.className = "coefficient-input product-input";
+          input.min = "1";
+          input.placeholder = "?";
+          input.setAttribute(
+            "aria-label",
+            `Coeficiente para ${product.formula}`
+          );
+          const formulaSpan = document.createElement("span");
+          formulaSpan.className = "formula";
+          formulaSpan.textContent = product.formula;
+
+          inputGroup.appendChild(input);
+          inputGroup.appendChild(formulaSpan);
+          inputArea.appendChild(inputGroup);
+
+          // Añade el '+' si no es el último producto
+          if (index < equationObj.products.length - 1) {
+            const plus = document.createElement("span");
+            plus.className = "operator";
+            plus.textContent = "+";
+            inputArea.appendChild(plus);
+          }
+        });
+      }
+
+      function checkBalance() {
+        if (!currentEquation) return null; // No hay ecuación cargada
+
+        const reactantInputs = document.querySelectorAll(".reactant-input");
+        const productInputs = document.querySelectorAll(".product-input");
+
+        const reactantCoeffs = Array.from(reactantInputs).map(
+          (input) => parseInt(input.value) || 1
+        ); // Default a 1 si está vacío o inválido
+        const productCoeffs = Array.from(productInputs).map(
+          (input) => parseInt(input.value) || 1
+        ); // Default a 1
+
+        const reactantAtoms = {};
+        const productAtoms = {};
+        const allElements = new Set(); // Para rastrear todos los elementos involucrados
+
+        // Contar átomos en reactantes
+        currentEquation.reactants.forEach((reactant, index) => {
+          const coeff = reactantCoeffs[index];
+          for (const element in reactant.atoms) {
+            reactantAtoms[element] =
+              (reactantAtoms[element] || 0) + reactant.atoms[element] * coeff;
+            allElements.add(element);
+          }
+        });
+
+        // Contar átomos en productos
+        currentEquation.products.forEach((product, index) => {
+          const coeff = productCoeffs[index];
+          for (const element in product.atoms) {
+            productAtoms[element] =
+              (productAtoms[element] || 0) + product.atoms[element] * coeff;
+            allElements.add(element);
+          }
+        });
+
+        // Comparar cuentas para cada elemento
+        let isBalanced = true;
+        for (const element of allElements) {
+          if ((reactantAtoms[element] || 0) !== (productAtoms[element] || 0)) {
+            isBalanced = false;
+            break; // Si uno no coincide, ya no está balanceado
+          }
+        }
+
+        return isBalanced;
+      }
+
+      function formatBalancedEquation(equationObj, coeffs) {
+        let equationString = "";
+        let coeffIndex = 0;
+
+        // Reactantes
+        equationObj.reactants.forEach((reactant, index) => {
+          // No mostrar coeficiente si es 1 (a menos que sea el único reactivo)
+          const coeff = coeffs[coeffIndex];
+          if (coeff > 1 || equationObj.reactants.length === 1) {
+            equationString += `${coeff} `;
+          }
+          equationString += reactant.formula;
+          coeffIndex++;
+          if (index < equationObj.reactants.length - 1) {
+            equationString += " + ";
+          }
+        });
+
+        equationString += " → ";
+
+        // Productos
+        equationObj.products.forEach((product, index) => {
+          const coeff = coeffs[coeffIndex];
+          if (coeff > 1 || equationObj.products.length === 1) {
+            equationString += `${coeff} `;
+          }
+          equationString += product.formula;
+          coeffIndex++;
+          if (index < equationObj.products.length - 1) {
+            equationString += " + ";
+          }
+        });
+
+        return equationString;
+      }
+
+      function checkAnswer() {
+        const isBalanced = checkBalance();
+        const feedback = document.getElementById("feedback");
+
+        if (isBalanced === null) return; // No hacer nada si no hay ecuación
+
+        if (isBalanced) {
+          feedback.textContent =
+            "¡Correcto! La ecuación está balanceada con tus coeficientes.";
+          feedback.className = "feedback correcto"; // Añade clase 'correcto'
+        } else {
+          const correctEqString = formatBalancedEquation(
+            currentEquation,
+            currentEquation.correctCoeffs
+          );
+          feedback.innerHTML = `Incorrecto. Revisa tus coeficientes. <br>
+                                      <span class="correct-equation-label">La ecuación balanceada correctamente es:</span>
+                                      <span class="correct-equation">${correctEqString}</span>`;
+          feedback.className = "feedback incorrecto"; // Añade clase 'incorrecto'
+        }
+        feedback.style.display = "block"; // Asegúrate de que el feedback sea visible
+      }
+
+      function generateNewProblem() {
+        const newEquation = getRandomEquation();
+        displayEquation(newEquation);
+      }
+
+      // =============================================
+      // INICIALIZACIÓN
+      // =============================================
+      document.addEventListener("DOMContentLoaded", () => {
+        generateNewProblem(); // Carga la primera ecuación al iniciar
+      });
+    </script>
+  </body>
+</html>
