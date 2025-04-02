@@ -44,6 +44,38 @@
         text-align: left; /* Align section headers left */
       }
 
+      /* Estilo para el botón de navegación a Balanceo */
+      .nav-button-container {
+        text-align: center; /* Centra el botón */
+        margin-bottom: 35px; /* Más espacio debajo del botón */
+        margin-top: -10px; /* Acercarlo un poco al título */
+      }
+
+      .nav-button {
+        display: inline-block; /* Permite aplicar padding y centrado */
+        background-color: #e67e22; /* Un color naranja llamativo */
+        color: white;
+        padding: 12px 25px; /* Más padding para destacar */
+        border: none;
+        border-radius: 5px;
+        font-size: 1.1em; /* Un poco más grande */
+        font-weight: bold;
+        text-decoration: none; /* Quita el subrayado del enlace */
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease,
+          box-shadow 0.2s ease;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+      }
+      .nav-button:hover {
+        background-color: #d35400; /* Naranja más oscuro al pasar el mouse */
+        transform: translateY(-2px); /* Efecto ligero de elevación */
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+      }
+      .nav-button:active {
+        transform: translateY(0); /* Vuelve a su posición al hacer clic */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+      }
+
       /* Secciones de Ejercicios */
       .ejercicio-seccion {
         margin-bottom: 30px;
@@ -221,6 +253,14 @@
   <body>
     <div class="container">
       <h1>Ejercicios de Estequiometría</h1>
+
+      <!-- =========== BOTÓN DE NAVEGACIÓN A BALANCEO ========== -->
+      <div class="nav-button-container">
+        <a href="./balanceoaltanteo.html" class="nav-button">
+          ¿Necesitas Practicar Balanceo? ¡Haz Clic Aquí!
+        </a>
+      </div>
+      <!-- ===================================================== -->
 
       <!-- Ejercicio: Mol-Mol -->
       <section class="ejercicio-seccion" id="ejercicio-mol-mol">
