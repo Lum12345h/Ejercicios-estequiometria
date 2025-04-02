@@ -15,15 +15,17 @@
         color: #333;
         display: flex;
         justify-content: center;
+        min-height: 100vh; /* Ensure container can center vertically if needed */
       }
 
       .container {
         width: 100%;
-        max-width: 800px; /* Slightly narrower for focus */
+        max-width: 800px; /* Max width for content */
         background-color: #fff;
         padding: 30px;
         border-radius: 8px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        margin: 20px 0; /* Add vertical margin */
       }
 
       h1,
@@ -88,10 +90,11 @@
       }
 
       textarea {
-        height: 80px; /* Slightly shorter default */
+        height: 80px; /* Default height */
         resize: vertical;
         font-family: monospace; /* Good for procedures */
         color: #555;
+        background-color: #fdfefe; /* Slightly off-white */
       }
 
       button {
@@ -101,7 +104,7 @@
         border: none;
         border-radius: 4px;
         cursor: pointer;
-        font-size: 0.95em; /* Slightly smaller */
+        font-size: 0.95em;
         transition: background-color 0.3s ease, box-shadow 0.2s ease;
         margin-right: 10px;
         margin-top: 5px;
@@ -130,6 +133,7 @@
         border-radius: 4px;
         color: #1a5276;
         font-family: "Courier New", Courier, monospace; /* Monospace for better formula alignment */
+        overflow-x: auto; /* Handle long equations on small screens */
       }
 
       /* Resultados y Feedback */
@@ -157,14 +161,19 @@
       }
       .feedback strong {
         /* Style correct answer within feedback */
-        color: #1f618d;
+        color: #1f618d; /* Match heading color */
+        font-weight: bold;
       }
       .feedback .procedimiento-titulo {
         /* Style procedure heading */
         font-weight: bold;
         margin-top: 10px;
+        margin-bottom: 5px;
         display: block;
         color: #555;
+        font-size: 0.9em;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
       .feedback .procedimiento-pasos {
         /* Style steps */
@@ -172,11 +181,20 @@
         font-size: 0.95em;
         color: #333;
         white-space: pre-wrap; /* Preserve line breaks in procedure */
+        background-color: rgba(
+          255,
+          255,
+          255,
+          0.6
+        ); /* Slight white background for steps */
+        padding: 10px;
+        border-radius: 3px;
+        border-left: 3px solid #adb5bd;
       }
 
       /* Notas y Problemas */
       .problema-texto {
-        font-size: 1.05em; /* Slightly larger problem text */
+        font-size: 1.05em;
         color: #34495e;
         margin-bottom: 10px;
         padding: 10px;
@@ -341,12 +359,11 @@
 
     <script>
       const VOLUMEN_MOLAR_CNPT = 22.4; // L/mol
-      const TOLERANCIA = 0.025; // Tolerancia relativa del 2.5% (permite un poco más de margen por redondeo)
+      const TOLERANCIA = 0.025; // Tolerancia relativa del 2.5%
 
       // =============================================
-      // DATOS PARA EJERCICIOS ALEATORIOS (CORREGIDOS)
+      // DATOS PARA EJERCICIOS ALEATORIOS (CORREGIDOS Y CON CLAVES SEGURAS)
       // =============================================
-      // Usando claves alfanuméricas seguras
       const dataMolMol = [
         {
           eq: "2 H₂ (g) + O₂ (g) → 2 H₂O (l)",
@@ -456,6 +473,7 @@
           prompt:
             "Al calentar {value} gramos de CaCO₃, ¿qué volumen de CO₂ (en litros) se desprende en CNPT?",
         },
+        // *** NOTA: Corregida ecuación de H2O2 que estaba mal balanceada en el ejemplo del usuario ***
         {
           eq: "2 H₂O₂ (aq) → 2 H₂O (l) + O₂ (g)",
           coef: { H2O2: 2, H2O: 2, O2: 1 },
@@ -485,6 +503,7 @@
         );
       }
 
+      // ****** INICIO FUNCIÓN GENERARPROBLEMA MODIFICADA ******
       function generarProblema(tipo) {
         let dataSet,
           valorInput,
@@ -506,6 +525,7 @@
 
         // Selectors and data based on type
         if (tipo === "mol-mol") {
+          // --- Sección Mol-Mol con procedimiento según descripción del usuario ---
           dataSet = dataMolMol;
           valorInput = getRandomValue(0.5, 20, 2); // Moles
           unidadInput = "moles";
@@ -515,7 +535,7 @@
           feedbackEl = document.getElementById("feedback-mol-mol");
           respuestaInputEl = document.getElementById("resp-mol-mol");
           procTextareaEl = document.getElementById("proc-mol-mol");
-          masasMolaresEl = null; // Not needed
+          masasMolaresEl = null;
 
           problemaData = dataSet[Math.floor(Math.random() * dataSet.length)];
           knownSubstance = problemaData.known;
@@ -526,16 +546,23 @@
           // Calcular respuesta
           respuestaCorrectaNum = valorInput * (unknownCoeff / knownCoeff);
 
-          // Generar procedimiento
-          procedimientoCorrectoStr = `1. Identificar la relación molar de la ecuación: ${knownCoeff} mol ${knownSubstance} : ${unknownCoeff} mol ${unknownSubstance}\n`;
-          procedimientoCorrectoStr += `2. Usar la relación para convertir moles de ${knownSubstance} a moles de ${unknownSubstance}:\n`;
-          procedimientoCorrectoStr += `   Moles ${unknownSubstance} = ${valorInput.toFixed(
+          // Generar procedimiento Mol-Mol según descripción
+          procedimientoCorrectoStr = `1. Verificar que la ecuación esté balanceada (¡ya lo está!).\n`;
+          procedimientoCorrectoStr += `2. Estructurar datos dados y deseados:\n`;
+          procedimientoCorrectoStr += `   - Dados: ${valorInput.toFixed(
             2
-          )} mol ${knownSubstance} * (${unknownCoeff} mol ${unknownSubstance} / ${knownCoeff} mol ${knownSubstance})\n`;
-          procedimientoCorrectoStr += `   Moles ${unknownSubstance} = ${respuestaCorrectaNum.toFixed(
+          )} moles de ${knownSubstance} (Coeficiente en ecuación: ${knownCoeff})\n`;
+          procedimientoCorrectoStr += `   - Deseados: X moles de ${unknownSubstance} (Coeficiente en ecuación: ${unknownCoeff})\n`;
+          procedimientoCorrectoStr += `3. Plantear el problema usando el factor mol-mol (relación de coeficientes) para cancelar los moles dados:\n`;
+          procedimientoCorrectoStr += `   Factor mol-mol = (${unknownCoeff} moles de ${unknownSubstance} / ${knownCoeff} moles de ${knownSubstance})\n`;
+          procedimientoCorrectoStr += `   Cálculo: ${valorInput.toFixed(
+            2
+          )} moles de ${knownSubstance} * (${unknownCoeff} moles de ${unknownSubstance} / ${knownCoeff} moles de ${knownSubstance})\n`;
+          procedimientoCorrectoStr += `   Resultado = ${respuestaCorrectaNum.toFixed(
             3
-          )} mol`; // More precision internally
+          )} moles de ${unknownSubstance}`; // Más precisión interna para el cálculo
         } else if (tipo === "masa-masa") {
+          // --- Sección Masa-Masa con procedimiento de Regla de 3 ---
           dataSet = dataMasaMasa;
           valorInput = getRandomValue(1, 250, 1); // Grams
           unidadInput = "gramos";
@@ -555,39 +582,63 @@
           const knownMolarMass = problemaData.masses[knownSubstance];
           const unknownMolarMass = problemaData.masses[unknownSubstance];
 
-          // Calcular respuesta (paso a paso)
+          // Calcular la respuesta (internamente seguimos usando moles por precisión)
           const molesKnown = valorInput / knownMolarMass;
           const molesUnknown = molesKnown * (unknownCoeff / knownCoeff);
           respuestaCorrectaNum = molesUnknown * unknownMolarMass;
 
-          // Generar procedimiento
-          procedimientoCorrectoStr = `1. Convertir gramos de ${knownSubstance} a moles (Masa Molar ${knownSubstance} = ${knownMolarMass.toFixed(
+          // Generar procedimiento según la "Regla de 3" directa con masas
+          const totalMasaConocidaEq = knownCoeff * knownMolarMass; // Masa total de la sustancia conocida en la ecuación balanceada
+          const totalMasaDesconocidaEq = unknownCoeff * unknownMolarMass; // Masa total de la sustancia desconocida en la ecuación balanceada
+
+          procedimientoCorrectoStr = `1. Verificar que la ecuación esté balanceada (¡ya lo está!).\n`;
+          procedimientoCorrectoStr += `2. Calcular/Identificar las masas molares necesarias:\n`;
+          procedimientoCorrectoStr += `   - Masa Molar ${knownSubstance}: ${knownMolarMass.toFixed(
             2
-          )} g/mol):\n`;
-          procedimientoCorrectoStr += `   Moles ${knownSubstance} = ${valorInput.toFixed(
+          )} g/mol\n`;
+          procedimientoCorrectoStr += `   - Masa Molar ${unknownSubstance}: ${unknownMolarMass.toFixed(
+            2
+          )} g/mol\n`;
+          procedimientoCorrectoStr += `3. Establecer la relación de masas según la ecuación balanceada:\n`;
+          procedimientoCorrectoStr += `   - Masa de ${knownSubstance} en la ecuación = ${knownCoeff} mol * ${knownMolarMass.toFixed(
+            2
+          )} g/mol = ${totalMasaConocidaEq.toFixed(2)} g\n`;
+          procedimientoCorrectoStr += `   - Masa de ${unknownSubstance} en la ecuación = ${unknownCoeff} mol * ${unknownMolarMass.toFixed(
+            2
+          )} g/mol = ${totalMasaDesconocidaEq.toFixed(2)} g\n`;
+          procedimientoCorrectoStr += `   Esto significa: ${totalMasaConocidaEq.toFixed(
+            2
+          )} g de ${knownSubstance} producen/reaccionan con ${totalMasaDesconocidaEq.toFixed(
+            2
+          )} g de ${unknownSubstance}.\n`;
+          procedimientoCorrectoStr += `4. Aplicar la Regla de 3 con la masa dada (${valorInput.toFixed(
             1
-          )} g / ${knownMolarMass.toFixed(2)} g/mol = ${molesKnown.toFixed(
-            4
-          )} mol\n`;
-          procedimientoCorrectoStr += `2. Usar la relación molar (${knownCoeff} mol ${knownSubstance} : ${unknownCoeff} mol ${unknownSubstance}) para encontrar moles de ${unknownSubstance}:\n`;
-          procedimientoCorrectoStr += `   Moles ${unknownSubstance} = ${molesKnown.toFixed(
-            4
-          )} mol ${knownSubstance} * (${unknownCoeff} mol ${unknownSubstance} / ${knownCoeff} mol ${knownSubstance}) = ${molesUnknown.toFixed(
-            4
-          )} mol\n`;
-          procedimientoCorrectoStr += `3. Convertir moles de ${unknownSubstance} a gramos (Masa Molar ${unknownSubstance} = ${unknownMolarMass.toFixed(
+          )} g de ${knownSubstance}):\n`;
+          procedimientoCorrectoStr += `      ${totalMasaConocidaEq.toFixed(
             2
-          )} g/mol):\n`;
-          procedimientoCorrectoStr += `   Gramos ${unknownSubstance} = ${molesUnknown.toFixed(
-            4
-          )} mol * ${unknownMolarMass.toFixed(
+          )} g ${knownSubstance}   ---->   ${totalMasaDesconocidaEq.toFixed(
             2
-          )} g/mol = ${respuestaCorrectaNum.toFixed(2)} g`;
+          )} g ${unknownSubstance}\n`;
+          procedimientoCorrectoStr += `      ${valorInput.toFixed(
+            1
+          )} g ${knownSubstance}   ---->   X g ${unknownSubstance}\n\n`;
+          procedimientoCorrectoStr += `   Resolviendo para X:\n`;
+          procedimientoCorrectoStr += `   X = (${valorInput.toFixed(
+            1
+          )} g ${knownSubstance} * ${totalMasaDesconocidaEq.toFixed(
+            2
+          )} g ${unknownSubstance}) / ${totalMasaConocidaEq.toFixed(
+            2
+          )} g ${knownSubstance}\n`;
+          procedimientoCorrectoStr += `   X = ${respuestaCorrectaNum.toFixed(
+            2
+          )} g ${unknownSubstance}`;
 
           masasMolaresEl.textContent = `Masas Molares Necesarias: ${knownSubstance} ≈ ${knownMolarMass.toFixed(
             2
           )} g/mol, ${unknownSubstance} ≈ ${unknownMolarMass.toFixed(2)} g/mol`;
         } else if (tipo === "masa-volumen") {
+          // --- Sección Masa-Volumen con procedimiento según descripción del usuario ---
           dataSet = dataMasaVolumen;
           valorInput = getRandomValue(1, 100, 1); // Grams
           unidadInput = "gramos";
@@ -604,36 +655,45 @@
           procTextareaEl = document.getElementById("proc-masa-volumen");
 
           problemaData = dataSet[Math.floor(Math.random() * dataSet.length)];
-          knownSubstance = problemaData.known;
-          unknownSubstance = problemaData.unknown; // El gas
+          knownSubstance = problemaData.known; // La sustancia de la que se da la masa
+          unknownSubstance = problemaData.unknown; // El gas del que se pide volumen
           knownCoeff = problemaData.coef[knownSubstance];
           unknownCoeff = problemaData.coef[unknownSubstance];
           const knownMolarMass = problemaData.masses[knownSubstance];
 
-          // Calcular respuesta (paso a paso)
+          // Calcular respuesta (paso a paso internamente)
           const molesKnown = valorInput / knownMolarMass;
-          const molesUnknown = molesKnown * (unknownCoeff / knownCoeff);
-          respuestaCorrectaNum = molesUnknown * VOLUMEN_MOLAR_CNPT;
+          const molesUnknownGas = molesKnown * (unknownCoeff / knownCoeff); // Moles del GAS
+          respuestaCorrectaNum = molesUnknownGas * VOLUMEN_MOLAR_CNPT;
 
-          // Generar procedimiento
-          procedimientoCorrectoStr = `1. Convertir gramos de ${knownSubstance} a moles (Masa Molar ${knownSubstance} = ${knownMolarMass.toFixed(
+          // Generar procedimiento Masa-Volumen según descripción
+          procedimientoCorrectoStr = `1. Verificar que la ecuación esté balanceada (¡ya lo está!).\n`;
+          procedimientoCorrectoStr += `2. Escribir datos dados y deseados:\n`;
+          procedimientoCorrectoStr += `   - Dados: ${valorInput.toFixed(
+            1
+          )} g de ${knownSubstance}\n`;
+          procedimientoCorrectoStr += `   - Deseados: X Litros de ${unknownSubstance} (en CNPT)\n`;
+          procedimientoCorrectoStr += `3. Obtener la Masa Molar de la sustancia dada (${knownSubstance}):\n`;
+          procedimientoCorrectoStr += `   - Masa Molar ${knownSubstance} = ${knownMolarMass.toFixed(
             2
-          )} g/mol):\n`;
-          procedimientoCorrectoStr += `   Moles ${knownSubstance} = ${valorInput.toFixed(
+          )} g/mol\n`;
+          procedimientoCorrectoStr += `4. Calcular los moles de la sustancia dada (${knownSubstance}) usando n = m / PM:\n`;
+          procedimientoCorrectoStr += `   n (${knownSubstance}) = ${valorInput.toFixed(
             1
           )} g / ${knownMolarMass.toFixed(2)} g/mol = ${molesKnown.toFixed(
             4
           )} mol\n`;
-          procedimientoCorrectoStr += `2. Usar la relación molar (${knownCoeff} mol ${knownSubstance} : ${unknownCoeff} mol ${unknownSubstance}) para encontrar moles del gas (${unknownSubstance}):\n`;
-          procedimientoCorrectoStr += `   Moles ${unknownSubstance} = ${molesKnown.toFixed(
+          procedimientoCorrectoStr += `5. Usar la relación molar de la ecuación (${knownCoeff} mol ${knownSubstance} : ${unknownCoeff} mol ${unknownSubstance}) para calcular los moles del gas (${unknownSubstance}):\n`;
+          procedimientoCorrectoStr += `   n (${unknownSubstance}) = ${molesKnown.toFixed(
             4
-          )} mol ${knownSubstance} * (${unknownCoeff} mol ${unknownSubstance} / ${knownCoeff} mol ${knownSubstance}) = ${molesUnknown.toFixed(
+          )} mol ${knownSubstance} * (${unknownCoeff} mol ${unknownSubstance} / ${knownCoeff} mol ${knownSubstance}) = ${molesUnknownGas.toFixed(
             4
           )} mol\n`;
-          procedimientoCorrectoStr += `3. Convertir moles del gas ${unknownSubstance} a Litros en CNPT (1 mol = ${VOLUMEN_MOLAR_CNPT} L):\n`;
-          procedimientoCorrectoStr += `   Volumen ${unknownSubstance} = ${molesUnknown.toFixed(
+          procedimientoCorrectoStr += `6. Convertir los moles del gas (${unknownSubstance}) a Litros en CNPT (1 mol = ${VOLUMEN_MOLAR_CNPT} L):\n`;
+          procedimientoCorrectoStr += `   Volumen ${unknownSubstance} = ${molesUnknownGas.toFixed(
             4
-          )} mol * ${VOLUMEN_MOLAR_CNPT} L/mol = ${respuestaCorrectaNum.toFixed(
+          )} mol * ${VOLUMEN_MOLAR_CNPT} L/mol\n`;
+          procedimientoCorrectoStr += `   Volumen ${unknownSubstance} = ${respuestaCorrectaNum.toFixed(
             2
           )} L`;
 
@@ -652,7 +712,7 @@
         );
         problemaTextoEl.textContent = prompt;
         ecuacionEl.textContent = problemaData.eq;
-        feedbackEl.textContent = "";
+        feedbackEl.innerHTML = ""; // Clear feedback content
         feedbackEl.className = "feedback"; // Reset class
         respuestaInputEl.value = "";
         procTextareaEl.value = "";
@@ -664,6 +724,7 @@
           unidad: unidadOutput, // Store unit for feedback message
         };
       }
+      // ****** FIN FUNCIÓN GENERARPROBLEMA MODIFICADA ******
 
       function chequearRespuesta(tipo) {
         const respuestaInputEl = document.getElementById(`resp-${tipo}`);
@@ -715,7 +776,7 @@
             `<div class="procedimiento-pasos">${procedimientoCorrecto.replace(
               /\n/g,
               "<br>"
-            )}</div>`; // Replace newlines with <br>
+            )}</div>`; // Replace newlines with <br> for HTML display
           feedbackEl.classList.add("incorrecto");
         }
       }
