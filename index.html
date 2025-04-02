@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ejercicios de Estequiometría</title>
+    <style>
+      /* Estilos Generales */
+      body {
+        font-family: sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 20px;
+        background-color: #eef2f7; /* Slightly different background */
+        color: #333;
+        display: flex;
+        justify-content: center;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 800px; /* Slightly narrower for focus */
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      h1,
+      h2 {
+        color: #1a5276; /* Darker blue */
+        border-bottom: 2px solid #5dade2; /* Lighter blue accent */
+        padding-bottom: 10px;
+        margin-bottom: 25px;
+        text-align: center;
+      }
+
+      h2 {
+        margin-top: 40px; /* Space between sections */
+        border-bottom: 1px dashed #aed6f1;
+        color: #1f618d;
+        text-align: left; /* Align section headers left */
+      }
+
+      /* Secciones de Ejercicios */
+      .ejercicio-seccion {
+        margin-bottom: 30px;
+        padding: 25px;
+        border: 1px solid #d6eaf8; /* Lighter border */
+        border-radius: 6px;
+        background-color: #f8f9fa; /* Very light grey */
+        position: relative; /* For potential absolute elements if needed later */
+      }
+
+      /* Formularios y Entradas */
+      label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: bold;
+        color: #2e4053;
+        font-size: 0.95em;
+      }
+      label.respuesta-label {
+        display: inline-block; /* Keep answer label inline */
+        margin-right: 8px;
+        margin-bottom: 0; /* Remove bottom margin for inline */
+        vertical-align: middle; /* Align with input */
+      }
+
+      input[type="number"],
+      textarea {
+        width: 100%;
+        padding: 10px 12px;
+        margin-bottom: 18px;
+        border: 1px solid #bdc3c7;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 1em;
+        background-color: #fff;
+      }
+      /* Smaller width for answer input */
+      input.respuesta-usuario {
+        width: 150px;
+        display: inline-block;
+        margin-right: 10px;
+        margin-bottom: 18px; /* Keep consistent margin */
+        vertical-align: middle;
+      }
+
+      textarea {
+        height: 80px; /* Slightly shorter default */
+        resize: vertical;
+        font-family: monospace; /* Good for procedures */
+        color: #555;
+      }
+
+      button {
+        background-color: #3498db;
+        color: white;
+        padding: 10px 18px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.95em; /* Slightly smaller */
+        transition: background-color 0.3s ease, box-shadow 0.2s ease;
+        margin-right: 10px;
+        margin-top: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      button:hover {
+        background-color: #2980b9;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+      button.secondary {
+        background-color: #7f8c8d;
+      }
+      button.secondary:hover {
+        background-color: #626f70; /* Darker grey */
+      }
+
+      /* Ecuaciones Químicas */
+      .equation {
+        font-size: 1.2em;
+        font-weight: bold;
+        text-align: center;
+        margin: 15px 0 20px 0; /* More bottom margin */
+        padding: 12px;
+        background-color: #eaf2f8; /* Light blue background */
+        border-left: 5px solid #5dade2;
+        border-radius: 4px;
+        color: #1a5276;
+        font-family: "Courier New", Courier, monospace; /* Monospace for better formula alignment */
+      }
+
+      /* Resultados y Feedback */
+      .feedback {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 4px;
+        font-weight: 500; /* Slightly less bold */
+        min-height: 40px;
+        background-color: #e9ecef;
+        border: 1px solid #ced4da;
+        color: #495057;
+        line-height: 1.5; /* Better readability for procedures */
+      }
+
+      .feedback.incorrecto {
+        color: #721c24; /* Darker red */
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+      }
+      .feedback.correcto {
+        color: #155724; /* Darker green */
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+      }
+      .feedback strong {
+        /* Style correct answer within feedback */
+        color: #1f618d;
+      }
+      .feedback .procedimiento-titulo {
+        /* Style procedure heading */
+        font-weight: bold;
+        margin-top: 10px;
+        display: block;
+        color: #555;
+      }
+      .feedback .procedimiento-pasos {
+        /* Style steps */
+        font-family: monospace;
+        font-size: 0.95em;
+        color: #333;
+        white-space: pre-wrap; /* Preserve line breaks in procedure */
+      }
+
+      /* Notas y Problemas */
+      .problema-texto {
+        font-size: 1.05em; /* Slightly larger problem text */
+        color: #34495e;
+        margin-bottom: 10px;
+        padding: 10px;
+        background-color: #fdfefe;
+        border-left: 4px solid #5dade2;
+        font-weight: 500;
+        border-radius: 3px;
+      }
+      .notes {
+        font-size: 0.9em;
+        color: #7f8c8d;
+        margin-top: -10px; /* Pull closer to element above */
+        margin-bottom: 15px; /* Space before next element */
+        padding-left: 10px;
+      }
+      .label-note {
+        font-size: 0.85em;
+        font-weight: normal;
+        color: #666;
+        margin-left: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Ejercicios de Estequiometría</h1>
+
+      <!-- Ejercicio: Mol-Mol -->
+      <section class="ejercicio-seccion" id="ejercicio-mol-mol">
+        <h2>Práctica: Mol-Mol</h2>
+        <div class="problema-container">
+          <p class="problema-texto" id="problema-mol-mol-texto">
+            Presiona "Generar Nuevo Problema" para empezar.
+          </p>
+          <div class="equation" id="ecuacion-mol-mol">Ecuación aquí...</div>
+        </div>
+        <div class="interaccion-container">
+          <label for="proc-mol-mol">
+            Tu Procedimiento
+            <span class="label-note">(Opcional - solo apoyo)</span>
+          </label>
+          <textarea
+            id="proc-mol-mol"
+            placeholder="Puedes escribir tus pasos aquí si te ayuda..."
+          ></textarea>
+
+          <label for="resp-mol-mol" class="respuesta-label"
+            >Tu Respuesta (moles):</label
+          >
+          <input
+            type="number"
+            id="resp-mol-mol"
+            class="respuesta-usuario"
+            step="any"
+            placeholder="Valor numérico"
+          />
+
+          <button onclick="chequearRespuesta('mol-mol')">
+            Comprobar Respuesta
+          </button>
+          <button onclick="generarProblema('mol-mol')" class="secondary">
+            Generar Nuevo Problema
+          </button>
+
+          <div class="feedback" id="feedback-mol-mol"></div>
+        </div>
+      </section>
+
+      <!-- Ejercicio: Masa-Masa -->
+      <section class="ejercicio-seccion" id="ejercicio-masa-masa">
+        <h2>Práctica: Masa-Masa</h2>
+        <div class="problema-container">
+          <p class="problema-texto" id="problema-masa-masa-texto">
+            Presiona "Generar Nuevo Problema" para empezar.
+          </p>
+          <div class="equation" id="ecuacion-masa-masa">Ecuación aquí...</div>
+          <div class="notes" id="masas-molares-masa-masa">
+            Masas Molares: ...
+          </div>
+        </div>
+        <div class="interaccion-container">
+          <label for="proc-masa-masa">
+            Tu Procedimiento
+            <span class="label-note">(Opcional - solo apoyo)</span>
+          </label>
+          <textarea
+            id="proc-masa-masa"
+            placeholder="Puedes escribir tus pasos aquí si te ayuda..."
+          ></textarea>
+
+          <label for="resp-masa-masa" class="respuesta-label"
+            >Tu Respuesta (gramos):</label
+          >
+          <input
+            type="number"
+            id="resp-masa-masa"
+            class="respuesta-usuario"
+            step="any"
+            placeholder="Valor numérico"
+          />
+
+          <button onclick="chequearRespuesta('masa-masa')">
+            Comprobar Respuesta
+          </button>
+          <button onclick="generarProblema('masa-masa')" class="secondary">
+            Generar Nuevo Problema
+          </button>
+
+          <div class="feedback" id="feedback-masa-masa"></div>
+        </div>
+      </section>
+
+      <!-- Ejercicio: Masa-Volumen -->
+      <section class="ejercicio-seccion" id="ejercicio-masa-volumen">
+        <h2>Práctica: Masa-Volumen (Gas en CNPT)</h2>
+        <div class="problema-container">
+          <p class="problema-texto" id="problema-masa-volumen-texto">
+            Presiona "Generar Nuevo Problema" para empezar.
+          </p>
+          <div class="equation" id="ecuacion-masa-volumen">
+            Ecuación aquí...
+          </div>
+          <div class="notes" id="masas-molares-masa-volumen">
+            Masas Molares: ...
+          </div>
+        </div>
+        <div class="interaccion-container">
+          <label for="proc-masa-volumen">
+            Tu Procedimiento
+            <span class="label-note">(Opcional - solo apoyo)</span>
+          </label>
+          <textarea
+            id="proc-masa-volumen"
+            placeholder="Puedes escribir tus pasos aquí si te ayuda..."
+          ></textarea>
+
+          <label for="resp-masa-volumen" class="respuesta-label"
+            >Tu Respuesta (Litros en CNPT):</label
+          >
+          <input
+            type="number"
+            id="resp-masa-volumen"
+            class="respuesta-usuario"
+            step="any"
+            placeholder="Valor numérico"
+          />
+
+          <button onclick="chequearRespuesta('masa-volumen')">
+            Comprobar Respuesta
+          </button>
+          <button onclick="generarProblema('masa-volumen')" class="secondary">
+            Generar Nuevo Problema
+          </button>
+
+          <div class="feedback" id="feedback-masa-volumen"></div>
+          <p class="notes">
+            Recuerda: 1 mol de gas ideal ocupa 22.4 L en CNPT (0°C y 1 atm).
+          </p>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const VOLUMEN_MOLAR_CNPT = 22.4; // L/mol
+      const TOLERANCIA = 0.025; // Tolerancia relativa del 2.5% (permite un poco más de margen por redondeo)
+
+      // =============================================
+      // DATOS PARA EJERCICIOS ALEATORIOS (CORREGIDOS)
+      // =============================================
+      // Usando claves alfanuméricas seguras
+      const dataMolMol = [
+        {
+          eq: "2 H₂ (g) + O₂ (g) → 2 H₂O (l)",
+          coef: { H2: 2, O2: 1, H2O: 2 },
+          known: "H2",
+          unknown: "H2O",
+          prompt:
+            "Si reaccionan {value} moles de H₂, ¿cuántos moles de H₂O se producen?",
+        },
+        {
+          eq: "N₂ (g) + 3 H₂ (g) → 2 NH₃ (g)",
+          coef: { N2: 1, H2: 3, NH3: 2 },
+          known: "N2",
+          unknown: "NH3",
+          prompt:
+            "A partir de {value} moles de N₂, ¿cuántos moles de NH₃ se forman?",
+        },
+        {
+          eq: "2 SO₂ (g) + O₂ (g) → 2 SO₃ (g)",
+          coef: { SO2: 2, O2: 1, SO3: 2 },
+          known: "O2",
+          unknown: "SO3",
+          prompt:
+            "Si se consumen {value} moles de O₂, ¿cuántos moles de SO₃ se generan?",
+        },
+        {
+          eq: "Fe₂O₃ (s) + 3 CO (g) → 2 Fe (s) + 3 CO₂ (g)",
+          coef: { Fe2O3: 1, CO: 3, Fe: 2, CO2: 3 },
+          known: "CO",
+          unknown: "Fe",
+          prompt: "Con {value} moles de CO, ¿cuántos moles de Fe se obtienen?",
+        },
+        {
+          eq: "C₃H₈ (g) + 5 O₂ (g) → 3 CO₂ (g) + 4 H₂O (l)",
+          coef: { C3H8: 1, O2: 5, CO2: 3, H2O: 4 },
+          known: "C3H8",
+          unknown: "CO2",
+          prompt:
+            "Al quemar {value} moles de C₃H₈, ¿cuántos moles de CO₂ se producen?",
+        },
+      ];
+
+      const dataMasaMasa = [
+        {
+          eq: "CH₄ (g) + 2 O₂ (g) → CO₂ (g) + 2 H₂O (l)",
+          coef: { CH4: 1, O2: 2, CO2: 1, H2O: 2 },
+          masses: { CH4: 16.04, O2: 32.0, CO2: 44.01, H2O: 18.02 },
+          known: "CH4",
+          unknown: "CO2",
+          prompt:
+            "Si se queman {value} gramos de CH₄, ¿cuántos gramos de CO₂ se producen?",
+        },
+        {
+          eq: "2 KClO₃ (s) → 2 KCl (s) + 3 O₂ (g)",
+          coef: { KClO3: 2, KCl: 2, O2: 3 },
+          masses: { KClO3: 122.55, KCl: 74.55, O2: 32.0 },
+          known: "KClO3",
+          unknown: "KCl",
+          prompt:
+            "Al descomponer {value} gramos de KClO₃, ¿cuántos gramos de KCl se forman?",
+        },
+        {
+          eq: "Fe₂O₃ (s) + 3 CO (g) → 2 Fe (s) + 3 CO₂ (g)",
+          coef: { Fe2O3: 1, CO: 3, Fe: 2, CO2: 3 },
+          masses: { Fe2O3: 159.69, CO: 28.01, Fe: 55.85, CO2: 44.01 },
+          known: "Fe2O3",
+          unknown: "Fe",
+          prompt:
+            "Si reaccionan {value} gramos de Fe₂O₃, ¿cuántos gramos de Fe se obtienen?",
+        },
+        {
+          eq: "Mg (s) + 2 HCl (aq) → MgCl₂ (aq) + H₂ (g)",
+          coef: { Mg: 1, HCl: 2, MgCl2: 1, H2: 1 },
+          masses: { Mg: 24.31, HCl: 36.46, MgCl2: 95.21, H2: 2.02 },
+          known: "Mg",
+          unknown: "MgCl2",
+          prompt:
+            "Si reaccionan {value} gramos de Mg con suficiente HCl, ¿cuántos gramos de MgCl₂ se producen?",
+        },
+      ];
+
+      const dataMasaVolumen = [
+        {
+          eq: "2 KClO₃ (s) → 2 KCl (s) + 3 O₂ (g)",
+          coef: { KClO3: 2, KCl: 2, O2: 3 },
+          masses: { KClO3: 122.55, KCl: 74.55, O2: 32.0 },
+          known: "KClO3",
+          unknown: "O2",
+          prompt:
+            "Al descomponer {value} gramos de KClO₃, ¿cuántos litros de O₂ gaseoso se producen en CNPT?",
+        },
+        {
+          eq: "Zn (s) + 2 HCl (aq) → ZnCl₂ (aq) + H₂ (g)",
+          coef: { Zn: 1, HCl: 2, ZnCl2: 1, H2: 1 },
+          masses: { Zn: 65.38, HCl: 36.46, ZnCl2: 136.28, H2: 2.02 },
+          known: "Zn",
+          unknown: "H2",
+          prompt:
+            "Si reaccionan {value} gramos de Zn, ¿cuántos litros de H₂ gaseoso se miden en CNPT?",
+        },
+        {
+          eq: "CaCO₃ (s) → CaO (s) + CO₂ (g)",
+          coef: { CaCO3: 1, CaO: 1, CO2: 1 },
+          masses: { CaCO3: 100.09, CaO: 56.08, CO2: 44.01 },
+          known: "CaCO3",
+          unknown: "CO2",
+          prompt:
+            "Al calentar {value} gramos de CaCO₃, ¿qué volumen de CO₂ (en litros) se desprende en CNPT?",
+        },
+        {
+          eq: "2 H₂O₂ (aq) → 2 H₂O (l) + O₂ (g)",
+          coef: { H2O2: 2, H2O: 2, O2: 1 },
+          masses: { H2O2: 34.01, H2O: 18.02, O2: 32.0 },
+          known: "H2O2",
+          unknown: "O2",
+          prompt:
+            "La descomposición de {value} gramos de H₂O₂ produce ¿cuántos litros de O₂ medidos en CNPT?",
+        },
+      ];
+
+      // Almacena la respuesta correcta Y el procedimiento para cada sección
+      let problemasActuales = {
+        "mol-mol": null,
+        "masa-masa": null,
+        "masa-volumen": null,
+      };
+
+      // =============================================
+      //         FUNCIONES PARA EJERCICIOS
+      // =============================================
+
+      function getRandomValue(min, max, decimals = 1) {
+        const factor = Math.pow(10, decimals);
+        return parseFloat(
+          (Math.random() * (max - min) + min).toFixed(decimals)
+        );
+      }
+
+      function generarProblema(tipo) {
+        let dataSet,
+          valorInput,
+          unidadInput,
+          unidadOutput,
+          problemaTextoEl,
+          ecuacionEl,
+          feedbackEl,
+          respuestaInputEl,
+          procTextareaEl,
+          masasMolaresEl;
+        let problemaData,
+          knownSubstance,
+          unknownSubstance,
+          knownCoeff,
+          unknownCoeff;
+        let respuestaCorrectaNum;
+        let procedimientoCorrectoStr = ""; // Variable para guardar el procedimiento
+
+        // Selectors and data based on type
+        if (tipo === "mol-mol") {
+          dataSet = dataMolMol;
+          valorInput = getRandomValue(0.5, 20, 2); // Moles
+          unidadInput = "moles";
+          unidadOutput = "moles";
+          problemaTextoEl = document.getElementById("problema-mol-mol-texto");
+          ecuacionEl = document.getElementById("ecuacion-mol-mol");
+          feedbackEl = document.getElementById("feedback-mol-mol");
+          respuestaInputEl = document.getElementById("resp-mol-mol");
+          procTextareaEl = document.getElementById("proc-mol-mol");
+          masasMolaresEl = null; // Not needed
+
+          problemaData = dataSet[Math.floor(Math.random() * dataSet.length)];
+          knownSubstance = problemaData.known;
+          unknownSubstance = problemaData.unknown;
+          knownCoeff = problemaData.coef[knownSubstance];
+          unknownCoeff = problemaData.coef[unknownSubstance];
+
+          // Calcular respuesta
+          respuestaCorrectaNum = valorInput * (unknownCoeff / knownCoeff);
+
+          // Generar procedimiento
+          procedimientoCorrectoStr = `1. Identificar la relación molar de la ecuación: ${knownCoeff} mol ${knownSubstance} : ${unknownCoeff} mol ${unknownSubstance}\n`;
+          procedimientoCorrectoStr += `2. Usar la relación para convertir moles de ${knownSubstance} a moles de ${unknownSubstance}:\n`;
+          procedimientoCorrectoStr += `   Moles ${unknownSubstance} = ${valorInput.toFixed(
+            2
+          )} mol ${knownSubstance} * (${unknownCoeff} mol ${unknownSubstance} / ${knownCoeff} mol ${knownSubstance})\n`;
+          procedimientoCorrectoStr += `   Moles ${unknownSubstance} = ${respuestaCorrectaNum.toFixed(
+            3
+          )} mol`; // More precision internally
+        } else if (tipo === "masa-masa") {
+          dataSet = dataMasaMasa;
+          valorInput = getRandomValue(1, 250, 1); // Grams
+          unidadInput = "gramos";
+          unidadOutput = "gramos";
+          problemaTextoEl = document.getElementById("problema-masa-masa-texto");
+          ecuacionEl = document.getElementById("ecuacion-masa-masa");
+          masasMolaresEl = document.getElementById("masas-molares-masa-masa");
+          feedbackEl = document.getElementById("feedback-masa-masa");
+          respuestaInputEl = document.getElementById("resp-masa-masa");
+          procTextareaEl = document.getElementById("proc-masa-masa");
+
+          problemaData = dataSet[Math.floor(Math.random() * dataSet.length)];
+          knownSubstance = problemaData.known;
+          unknownSubstance = problemaData.unknown;
+          knownCoeff = problemaData.coef[knownSubstance];
+          unknownCoeff = problemaData.coef[unknownSubstance];
+          const knownMolarMass = problemaData.masses[knownSubstance];
+          const unknownMolarMass = problemaData.masses[unknownSubstance];
+
+          // Calcular respuesta (paso a paso)
+          const molesKnown = valorInput / knownMolarMass;
+          const molesUnknown = molesKnown * (unknownCoeff / knownCoeff);
+          respuestaCorrectaNum = molesUnknown * unknownMolarMass;
+
+          // Generar procedimiento
+          procedimientoCorrectoStr = `1. Convertir gramos de ${knownSubstance} a moles (Masa Molar ${knownSubstance} = ${knownMolarMass.toFixed(
+            2
+          )} g/mol):\n`;
+          procedimientoCorrectoStr += `   Moles ${knownSubstance} = ${valorInput.toFixed(
+            1
+          )} g / ${knownMolarMass.toFixed(2)} g/mol = ${molesKnown.toFixed(
+            4
+          )} mol\n`;
+          procedimientoCorrectoStr += `2. Usar la relación molar (${knownCoeff} mol ${knownSubstance} : ${unknownCoeff} mol ${unknownSubstance}) para encontrar moles de ${unknownSubstance}:\n`;
+          procedimientoCorrectoStr += `   Moles ${unknownSubstance} = ${molesKnown.toFixed(
+            4
+          )} mol ${knownSubstance} * (${unknownCoeff} mol ${unknownSubstance} / ${knownCoeff} mol ${knownSubstance}) = ${molesUnknown.toFixed(
+            4
+          )} mol\n`;
+          procedimientoCorrectoStr += `3. Convertir moles de ${unknownSubstance} a gramos (Masa Molar ${unknownSubstance} = ${unknownMolarMass.toFixed(
+            2
+          )} g/mol):\n`;
+          procedimientoCorrectoStr += `   Gramos ${unknownSubstance} = ${molesUnknown.toFixed(
+            4
+          )} mol * ${unknownMolarMass.toFixed(
+            2
+          )} g/mol = ${respuestaCorrectaNum.toFixed(2)} g`;
+
+          masasMolaresEl.textContent = `Masas Molares Necesarias: ${knownSubstance} ≈ ${knownMolarMass.toFixed(
+            2
+          )} g/mol, ${unknownSubstance} ≈ ${unknownMolarMass.toFixed(2)} g/mol`;
+        } else if (tipo === "masa-volumen") {
+          dataSet = dataMasaVolumen;
+          valorInput = getRandomValue(1, 100, 1); // Grams
+          unidadInput = "gramos";
+          unidadOutput = "Litros (CNPT)";
+          problemaTextoEl = document.getElementById(
+            "problema-masa-volumen-texto"
+          );
+          ecuacionEl = document.getElementById("ecuacion-masa-volumen");
+          masasMolaresEl = document.getElementById(
+            "masas-molares-masa-volumen"
+          );
+          feedbackEl = document.getElementById("feedback-masa-volumen");
+          respuestaInputEl = document.getElementById("resp-masa-volumen");
+          procTextareaEl = document.getElementById("proc-masa-volumen");
+
+          problemaData = dataSet[Math.floor(Math.random() * dataSet.length)];
+          knownSubstance = problemaData.known;
+          unknownSubstance = problemaData.unknown; // El gas
+          knownCoeff = problemaData.coef[knownSubstance];
+          unknownCoeff = problemaData.coef[unknownSubstance];
+          const knownMolarMass = problemaData.masses[knownSubstance];
+
+          // Calcular respuesta (paso a paso)
+          const molesKnown = valorInput / knownMolarMass;
+          const molesUnknown = molesKnown * (unknownCoeff / knownCoeff);
+          respuestaCorrectaNum = molesUnknown * VOLUMEN_MOLAR_CNPT;
+
+          // Generar procedimiento
+          procedimientoCorrectoStr = `1. Convertir gramos de ${knownSubstance} a moles (Masa Molar ${knownSubstance} = ${knownMolarMass.toFixed(
+            2
+          )} g/mol):\n`;
+          procedimientoCorrectoStr += `   Moles ${knownSubstance} = ${valorInput.toFixed(
+            1
+          )} g / ${knownMolarMass.toFixed(2)} g/mol = ${molesKnown.toFixed(
+            4
+          )} mol\n`;
+          procedimientoCorrectoStr += `2. Usar la relación molar (${knownCoeff} mol ${knownSubstance} : ${unknownCoeff} mol ${unknownSubstance}) para encontrar moles del gas (${unknownSubstance}):\n`;
+          procedimientoCorrectoStr += `   Moles ${unknownSubstance} = ${molesKnown.toFixed(
+            4
+          )} mol ${knownSubstance} * (${unknownCoeff} mol ${unknownSubstance} / ${knownCoeff} mol ${knownSubstance}) = ${molesUnknown.toFixed(
+            4
+          )} mol\n`;
+          procedimientoCorrectoStr += `3. Convertir moles del gas ${unknownSubstance} a Litros en CNPT (1 mol = ${VOLUMEN_MOLAR_CNPT} L):\n`;
+          procedimientoCorrectoStr += `   Volumen ${unknownSubstance} = ${molesUnknown.toFixed(
+            4
+          )} mol * ${VOLUMEN_MOLAR_CNPT} L/mol = ${respuestaCorrectaNum.toFixed(
+            2
+          )} L`;
+
+          masasMolaresEl.textContent = `Masa Molar Necesaria: ${knownSubstance} ≈ ${knownMolarMass.toFixed(
+            2
+          )} g/mol`;
+        } else {
+          console.error("Tipo de problema desconocido:", tipo);
+          return;
+        }
+
+        // Actualizar UI
+        const prompt = problemaData.prompt.replace(
+          "{value}",
+          valorInput.toString()
+        );
+        problemaTextoEl.textContent = prompt;
+        ecuacionEl.textContent = problemaData.eq;
+        feedbackEl.textContent = "";
+        feedbackEl.className = "feedback"; // Reset class
+        respuestaInputEl.value = "";
+        procTextareaEl.value = "";
+
+        // Store correct answer AND procedure
+        problemasActuales[tipo] = {
+          valor: respuestaCorrectaNum,
+          procedimiento: procedimientoCorrectoStr,
+          unidad: unidadOutput, // Store unit for feedback message
+        };
+      }
+
+      function chequearRespuesta(tipo) {
+        const respuestaInputEl = document.getElementById(`resp-${tipo}`);
+        const feedbackEl = document.getElementById(`feedback-${tipo}`);
+        const problemaActual = problemasActuales[tipo]; // Retrieve stored problem data
+
+        feedbackEl.innerHTML = ""; // Clear previous feedback (use innerHTML now)
+        feedbackEl.className = "feedback"; // Reset class
+
+        if (!problemaActual) {
+          feedbackEl.textContent = "Primero genera un problema.";
+          feedbackEl.classList.add("incorrecto");
+          return;
+        }
+
+        const respuestaCorrecta = problemaActual.valor;
+        const procedimientoCorrecto = problemaActual.procedimiento;
+        const unidad = problemaActual.unidad;
+
+        const respuestaUsuario = parseFloat(respuestaInputEl.value);
+
+        if (isNaN(respuestaUsuario)) {
+          feedbackEl.textContent = "Por favor, ingresa una respuesta numérica.";
+          feedbackEl.classList.add("incorrecto");
+          return;
+        }
+
+        // Check with tolerance
+        const diff = Math.abs(respuestaUsuario - respuestaCorrecta);
+        // Use relative tolerance OR a small absolute tolerance for near-zero answers
+        const limiteTolerancia = Math.max(
+          Math.abs(respuestaCorrecta * TOLERANCIA),
+          0.01
+        );
+
+        if (diff <= limiteTolerancia) {
+          feedbackEl.textContent = `¡Correcto! La respuesta es aproximadamente ${respuestaCorrecta.toFixed(
+            2
+          )} ${unidad}.`;
+          feedbackEl.classList.add("correcto");
+        } else {
+          // Use innerHTML to format the procedure nicely
+          feedbackEl.innerHTML =
+            `Incorrecto. <br>` +
+            `La respuesta correcta es: <strong>${respuestaCorrecta.toFixed(
+              2
+            )} ${unidad}</strong>.<br>` +
+            `<span class="procedimiento-titulo">Procedimiento:</span>` +
+            `<div class="procedimiento-pasos">${procedimientoCorrecto.replace(
+              /\n/g,
+              "<br>"
+            )}</div>`; // Replace newlines with <br>
+          feedbackEl.classList.add("incorrecto");
+        }
+      }
+
+      // --- Initialize by generating first problems on load ---
+      document.addEventListener("DOMContentLoaded", () => {
+        generarProblema("mol-mol");
+        generarProblema("masa-masa");
+        generarProblema("masa-volumen");
+      });
+    </script>
+  </body>
+</html>
